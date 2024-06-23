@@ -1,0 +1,147 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Offline map example</title>
+        <link rel="stylesheet" href={% static 'css/styles.css' %} />
+        <link rel="stylesheet" href={% static 'css/leaflet.css' %} />
+        <link rel="stylesheet" href={% static 'css/bootstrap.css' %} />
+        <script type="text/javascript" src={% static 'js/leaflet.js' %}></script>
+        <script type="text/javascript" src={% static 'js/functions.js' %}></script>
+    </head>
+
+    <body>
+        <div class="head">
+            <a href="{% url 'maps:index' %}" class="btn btn-primary">На главную</a>
+            <h1>{{ city.name }}</h1>
+        </div>
+        <div class="grid">
+
+            <!-- leaflet -->
+            <div class="column">
+                <div id="map"></div>
+                <div class="centered-button">
+                    <button class="btn btn-primary" onclick="delete_user_markers()">Очистить
+                        пользовательские отметки</button>
+                </div>
+            </div>
+            <!-- end leaflet -->
+
+            <div class="column">
+                <!-- CSV loader -->
+                <div class="card mb-4">
+                    <div class="card-body align-left">
+                        <h3 class="card-header align-center">Загрузить CSV</h3>
+                        <div class="err-msg">{{ csv_error_message }}</div>
+                        <form method="post" enctype="multipart/form-data" class="card-body" novalidate>
+                            {% csrf_token %}
+
+                            {% for field in form %}
+                            <div class="mb-4 remove-margin-bottom">
+                                <label for="{{ field.auto_id }}" class="">{{ field.label }}</label>
+                                <div class="input-group">
+                                    {{ field }}
+                                    <!-- <span class="input-group-text">{{ field.label_suffix }}</span> -->
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- end CSV loader -->
+
+
+                <!-- Check layers -->
+                <div class="card mb-4">
+                    <h3 class="card-header align-center">Выбрать слои</h3>
+                    <form method="post" action="" class="card-body" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {% for layer in layers %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="{{ layer.id }}" name="layers"
+                                    value="{{ layer.id }}" {% if layer.selected %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ layer.id }}">{{ layer.title }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Отобразить метки</button>
+                    </form>
+                </div>
+                <!-- end Check layers -->
+
+            </div>
+        </div>
+
+        <script>
+            var data = JSON.parse("{{ map_data|escapejs }}");
+
+            function zip(arrays) {
+                return arrays[0].map(function (_, i) {
+                    return arrays.map(function (array) {
+                        return array[i]
+                    })
+                });
+            }
+
+            var map = L.map('map', {
+                center: [data.center_x, data.center_y],
+                minZoom: 12,
+                maxZoom: 14,
+                zoom: data.zoom
+            });
+            L.tileLayer(`../static/tiles/${data.tiles_city}/{z}_{x}_{y}.jpeg`, {}).addTo(map);
+
+            var user_markers = [];
+            map.on('dblclick', function (e) {
+                let marker = new L.Marker(e.latlng, {
+                    draggable: true
+                })
+                    .addTo(map);
+                user_markers.push(marker);
+            });
+            map.doubleClickZoom.disable();
+
+            data.layers_data.forEach((layer_data, index) => {
+                console.log(layer_data.layer_type)
+                if (layer_data.layer_type == "markers") {
+                    data = zip(layer_data.layer_data)
+                    console.log(data)
+                    markers(...data)
+                } else if (layer_data.layer_type == "polygons") {
+                    data = zip(layer_data.layer_data)
+                    console.log(data)
+                    polygon(...data)
+                }
+                else if (layer_data.layer_type == "routes") {
+                    data = zip(layer_data.layer_data)
+                    console.log(data)
+                    route(...data)
+                    // route(
+                    //     [55.1055, 55.1033, 55.0855, 55.0833],
+                    //     [61.2302, 61.2500, 61.2320, 61.2522],
+                    //     [55.1033, 55.0855, 55.0833, 55.1055],
+                    //     [61.2500, 61.2320, 61.2522, 61.2302],
+                    //     ['Bla1', 'Bla2', 'Bla3', 'Bla4'],
+                    //     ['Bla1', 'Bla2', 'Bla3', 'Bla4'],
+                    //     [5, 10, 15, 20],
+                    //     ['red', 'green', 'blue', 'red'])
+                }
+                else if (layer_data.layer_type == "heatmap") {
+                    data = zip(layer_data.layer_data)
+                    console.log(data)
+                    var radiusParam = 25;
+                    var blurParam = 15;
+                    var maxZoomParam = 8;
+                    heatMap(...data, radiusParam, blurParam, maxZoomParam)
+                }
+            });
+
+        </script>
+    </body>
+
+</html>

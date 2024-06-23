@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href={% static 'css/styles.css' %} />
+        <title>Offline map example</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>AGGIS</h1>
+            <select class="cities_select" onchange="location = this.value;">
+                <option value="" disabled selected>Выберите город</option>
+                {% for city in cities %}
+                <option value="{{ city.slug }}/">{{ city.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+    </body>
+
+</html>

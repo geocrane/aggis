@@ -1,0 +1,101 @@
+#map {
+    height:600px;
+    width: 100%;
+    border: 1px solid #AAA;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #8d8d8d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #323333;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    gap: 10px;
+    border: 2px solid rgb(66, 66, 66);
+    padding: 10px; /
+}
+.column {
+    padding: 10px;
+    box-sizing: border-box;
+    border: 2px solid rgb(138, 138, 138);
+    padding: 10px; /
+}
+
+.cities_select {
+    width: 50%; /* Ширина select будет составлять 50% от ширины контейнера */
+    font-size: 20px; /* Увеличение размера шрифта */
+    padding: 10px; /* Добавление внутренних отступов */
+    margin-top: 20px; /* Отступ сверху после заголовка */
+}
+
+.form {
+    width: 250px;
+    background-color: #f8f9fa;
+    margin-bottom: 50px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form h3 {
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.align-left {
+    text-align: left;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.remove-margin-bottom {
+    margin-bottom: 0 !important;
+}
+
+.centered-button{
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.err-msg{
+    text-align: center;
+    color: red;
+}
